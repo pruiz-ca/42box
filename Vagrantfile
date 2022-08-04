@@ -12,9 +12,6 @@ Vagrant.configure("2") do |config|
     vb.memory = "1024"
    end
 
-  config.vm.provision "file", source: ".42box_assets/bashrc", destination: "$HOME/.bashrc"
-  config.vm.provision "file", source: ".42box_assets/vimrc", destination: "$HOME/.vimrc"
-  config.vm.provision "file", source: ".42box_assets/vim", destination: "$HOME/.vim"
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
     apt-get upgrade
@@ -23,7 +20,10 @@ Vagrant.configure("2") do |config|
     python3 -m pip install --upgrade pip setuptools
     python3 -m pip install norminette
 
-    cp /vagrant/.42box_assets/motd /etc/motd
+    curl -sL https://raw.githubusercontent.com/pruiz-ca/42box/main/.42box_assets/bashrc -o /home/vagrant/.bashrc && chown vagrant:vagrant /home/vagrant/.bashrc
+    curl -sL https://raw.githubusercontent.com/pruiz-ca/42box/main/.42box_assets/vimrc -o /home/vagrant/.vimrc && chown vagrant:vagrant /home/vagrant/.vimrc
+    curl -sL https://raw.githubusercontent.com/pruiz-ca/42box/main/.42box_assets/vim/stdheader.vim --create-dirs -o /home/vagrant/.vim/stdheader.vim && chown -R vagrant:vagrant /home/vagrant/.vim
+    curl -sL https://raw.githubusercontent.com/pruiz-ca/42box/main/.42box_assets/motd -o /etc/motd
 
     SHELL
 end

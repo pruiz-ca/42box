@@ -1,15 +1,6 @@
 #!/bin/bash
 
-# echo "Where do you want to install 42box?"
-# echo "Please enter the path (absolute or relative to the current directory): \c"
-# read -e path
-
 path=$(pwd)
-
-# Makes sure the path is absolute
-# if [ "${path:0:1}" != "/" ]; then
-# 	path="$(pwd)/$path"
-# fi
 
 # Create path directory if it doesn't exist
 if [ ! -d "$path" ]; then
@@ -17,13 +8,17 @@ if [ ! -d "$path" ]; then
 	echo "✅ Directory created... "
 fi
 
-if [ ! -d "$path/.42box_assets" ]; then
-	cp -r .42box_assets "$path"
-	echo "✅ .42box_assets folder copied... "
-fi
-if [ ! -f "$path/Vagrantfile" ]; then
-	cp Vagrantfile "$path"
-	echo "✅ Vagrantfile copied... "
+# If Vagrantfile exists, ask if user wants to overwrite it
+if [ -f "$path/Vagrantfile" ]; then
+	echo "⚠️ Vagrantfile already exists in this directory. Do you want to overwrite it? (y/n)"
+	read -r answer
+	if [ "$answer" = "y" ]; then
+		echo "✅ Overwriting Vagrantfile..."
+		rm "$path/Vagrantfile"
+		curl -sL -o "$path/Vagrantfile" https://raw.githubusercontent.com/pruiz-ca/42box/main/Vagrantfile
+	fi
+else
+	curl -sL -o "$path/Vagrantfile" https://raw.githubusercontent.com/pruiz-ca/42box/main/Vagrantfile
 fi
 
 # Install homebrew, vagrant and virtualbox
